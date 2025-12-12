@@ -6,7 +6,7 @@ from functools import reduce
 from operator import mul
 from torch.nn.modules.utils import _pair
 from collections import Counter, OrderedDict
-
+# ViT-B/32 model with prompt prepended, but no global prompt pool
 class Prompted_ViT_B32(nn.Module):
     def __init__(self, weight_init, prompt_method, num_tokens, prompt_dropout_value=0.0,
                  classification_adaptor=True, frozen_pretrian=True, num_classes=10):

@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 def setup_seed(seed):
+    """Setup seed values"""
     random.seed(1+seed)
     np.random.seed(21+seed)
     os.environ['PYTHONHASHSEED'] = str(seed)

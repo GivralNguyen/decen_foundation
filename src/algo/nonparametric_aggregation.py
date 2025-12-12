@@ -9,6 +9,7 @@ from torch.distributions.bernoulli import Bernoulli
 from torch.distributions.independent import Independent
 from scipy.optimize import linear_sum_assignment
 
+# Non parametric aggregation
 class NonparametricAgg(nn.Module):
     def __init__(self, prompt_dim, n_hidden=128):
         super(NonparametricAgg, self).__init__()

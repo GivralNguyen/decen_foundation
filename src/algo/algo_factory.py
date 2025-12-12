@@ -1,9 +1,11 @@
 from algo.fedavg import fedavg
 from algo.decen_fedavg import decenfedavg
 class AlgoFactory:
+    # Factory for init centralized or decentralized FedAvg variants
+    # based on FL setting (centralized / decentralized), aggregation type
+    # (parametric / nonparametric), and communication topology (decen only).
     @staticmethod
     def create(args, **kwargs):
-
         fl = args['fl_setting']
         agg = args['aggregation']
         if fl == 'decentralized_fl':

@@ -2,6 +2,7 @@ import copy
 import numpy as np
 from collections import OrderedDict
 
+# Some baseline FL functions
 class FL_base(object):
     def __init__(self, all_client_weights, n_clients, n_clients_each_round, distributed_dataloaders):
         self.all_client_weights = all_client_weights

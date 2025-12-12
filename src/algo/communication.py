@@ -3,8 +3,11 @@ import torch.nn as nn
 import copy
 import numpy as np
 from algo.nonparametric_aggregation import NonparametricAgg
+from algo.nonparametric_aggregation import DecenNonparametricAgg
 
 def communication(server_model, models, client_weights, aggregation_method='parametric', total_n_clietns=100, nonpara_hidden=128, device='cuda'):
+    # Centralized FL aggregation step: sync all clients to the server using either
+    # parametric (FedAvg on all trainable keys) or nonparametric agg.
     client_num = len(models)
     sum_weights = torch.tensor(np.sum(client_weights), dtype=torch.float, device=device)
     
@@ -69,26 +72,11 @@ def communication(server_model, models, client_weights, aggregation_method='para
 def decen_communication(models, G, client_weights=None,
                         aggregation_method='parametric', nonpara_hidden=128, device='cuda'):
     """
-    Decentralized communication step on topology G.
+    # Decentralized FL aggregation step: each client aggregates only within its local
+    # neighborhood in graph G (neighbors + self). Uses local FedAvg for parametric,
+    # and DecenNonparametricAgg for prompt params when aggregation_method='nonparametric_aggregation'.
+    ...
 
-    Each client i updates:
-
-        w_i <- sum_{j in N(i) ∪ {i}} alpha_j * w_j / sum_{j in N(i) ∪ {i}} alpha_j
-
-    where N(i) is neighbors of i in G, and alpha_j = client_weights[j]
-    (or 1.0 if client_weights is None).
-
-    If aggregation_method == 'nonparametric_aggregation':
-        - Non-prompt params: same as above (local FedAvg).
-        - Prompt params: use NonparametricAgg over prompts from local neighborhood.
-    
-    Args:
-        models: list of client models, indexed 0..n_clients-1
-        G: networkx Graph, nodes must be 0..n_clients-1
-        client_weights: list/array of length n_clients or None (uniform)
-        aggregation_method: 'fedavg' or 'nonparametric_aggregation'
-        nonpara_hidden: hidden size for NonparametricAgg
-        device: 'cuda' or 'cpu'
     """
     n_clients = len(models)
     assert set(G.nodes) == set(range(n_clients)), "Graph nodes must be 0..n_clients-1"

@@ -82,7 +82,9 @@ class Pool(nn.Module):
         
         return reduce_sim, batched_prompt
         
-        
+# L2P-style prompt pooling for ViT (Wang et al 2021): select top-k prompts from a learnable prompt pool
+# using CLS-feature similarity, prepend selected prompts to tokens, and infer through a 
+# ViT-B/32 encoder with a trainable classification head. 
 class L2P_ViT_B32(nn.Module):
     def __init__(self, prompt_method, batchwise_prompt, classification_adaptor=True,
                  pool_size=None, top_k=None, frozen_pretrian=True, num_classes=10):

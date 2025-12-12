@@ -3,6 +3,10 @@ import torch.utils.data as Data
 import numpy as np
 from collections import Counter
 
+# Split a labeled PyTorch dataset into per-client index subsets for FL.
+# Supports IID split, Dirichlet non-IID split, and a manual dominated-class non-IID split,
+# and returns per-client DataLoaders + label distribution stats / client sample weights.
+
 class DataPartitioner(object):
     def __init__(
         self, dataset, n_clients, seed=0

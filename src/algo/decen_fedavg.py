@@ -5,14 +5,14 @@ from algo.communication import decen_communication
 from algo.fedavg import fedavg
 from training.eval import evaluate
 
-# assumes your original class name is `fedavg` exactly (from the code you pasted earlier)
+# Inherits from fedavg class, with graph as additional parameter
 class decenfedavg(fedavg):
     def __init__(self, base_model, scenario, loss_fun, class_mask, G, aggregation_method='parametric', nonpara_hidden=128, device='cuda'):
         super(decenfedavg, self).__init__(base_model=base_model, scenario=scenario, loss_fun=loss_fun, class_mask=class_mask, aggregation_method=aggregation_method, nonpara_hidden=nonpara_hidden, device=device)
         self.base_model = base_model
         self.base_model.eval()
         self.graph = G  # topology graph (nodes: 0..n_clients_each_round-1)
-
+    # aggregation with only neighbors
     def agg(self):
         local_models = self.client_model[:self.scenario.n_clients_each_round]
         local_weights = self.selected_client_weights
@@ -21,7 +21,7 @@ class decenfedavg(fedavg):
         if hasattr(self.client_model[0], 'trained_prompts_checklist'):
             for i in range(self.scenario.n_clients_each_round):
                 self.client_model[i].reset_trained_pormpts_checklist()
-
+    # average accuracy across all clients
     def global_eval_avg(self, testloader, output_file):
         total_loss, total_acc, n_clients = 0.0, 0.0, self.scenario.n_clients_each_round
         for i in range(n_clients):

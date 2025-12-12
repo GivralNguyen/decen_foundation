@@ -4,7 +4,8 @@ import numpy as np
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
-    
+
+# per client training function
 def train(model, data_loader, optimizer, loss_fun, device='cuda', reduce_sim_scalar=0.01, mask=None):
     model.train()
     loss_all = 0

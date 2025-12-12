@@ -16,7 +16,12 @@ def build_data_transform(normalize_stats, resize, centercrop_size,
                                     transforms.Normalize(*normalize_stats,inplace=True)])
     return transform
 
+
 class DatasetFactory:
+    # Dataset + preprocessing factory for FL experiments:
+    # builds torchvision/custom datasets, applies a standard transform pipeline,
+    # partitions train data across clients (Dirichlet non-IID or manual extreme heterogeneity),
+    # and returns per-client train loaders, test loader(s), client weights, num_classes, and extra metadata.
     def __init__(self, _norm_stats = None, _resize = None, _centercrop_size = None):
         ns = norm_stats if _norm_stats is None else _norm_stats
         rs = resize if _resize is None else _resize

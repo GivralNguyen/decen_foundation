@@ -4,16 +4,10 @@ from tqdm import trange
 import wandb 
 def run_train_loop(*,algo, args , testloader):
     """
-    Standard decentralized FL training loop.
-
     Steps per round:
-      1) client_train
-      2) algo.agg()
-      3) logging
-      4) global_eval_avg
-
-    Returns:
-      eval_loss_record, eval_acc_record
+      1) clients_train
+      2) aggregation
+      3) Evaluation
     """
 
 
@@ -26,10 +20,10 @@ def run_train_loop(*,algo, args , testloader):
             reduce_sim_scalar=args['reduce_sim_scalar'],
         )
 
-        # 2) Decentralized aggregation (neighbors only)
+        # 2) aggregation 
         algo.agg()
 
-        # 4) Evaluation: average metrics over all clients
+        # 3) Evaluation
         eval_loss, eval_acc = algo.global_eval_avg(
             testloader
         )

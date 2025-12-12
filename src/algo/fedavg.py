@@ -6,6 +6,7 @@ from algo.communication import communication
 from training.train import train
 from training.eval import evaluate, evaluate_mask
 
+# Fedavg Mcmahan et.al 2016
 class fedavg(nn.Module):
     def __init__(self, base_model, scenario, loss_fun, class_mask, aggregation_method='parametric', nonpara_hidden=128, device='cuda'):
         super(fedavg, self).__init__()
@@ -27,6 +28,7 @@ class fedavg(nn.Module):
         for epoch in range(epochs):
             self.client_model[idx].train()'''
 
+    # local client training step
     def client_train(self, comm_round, epochs, lr, opt_func=torch.optim.Adam, reduce_sim_scalar=0.01, print_output=False):
         if self.scenario.type == 'cross_devices':
             self.selected_client_index, self.selected_distributed_dataloaders, self.selected_client_weights \
@@ -59,11 +61,13 @@ class fedavg(nn.Module):
             for i in range(self.scenario.n_clients_each_round):
                 self.client_model[i].reset_trained_pormpts_checklist()
 
+    # client model eval
     def client_eval(self, testloader):
         for i in range(self.scenario.n_clients_each_round):
             train_loss, train_acc = evaluate(self.client_model[i], testloader, self.loss_fun, self.device)
             print(f'Client_{self.selected_client_index[i]+1}: Train_loss: {train_loss}; Accuracy: {train_acc}')
 
+    # server model eval
     def global_eval_avg(self, testloader, nround):
         if self.class_mask is not None:
             eval_loss, eval_acc = evaluate_mask(self.base_model, testloader, self.loss_fun, self.device, self.class_mask)

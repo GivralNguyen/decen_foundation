@@ -10,7 +10,7 @@ parameters:
   seed:
     values: [0]
   device:
-    value: "cpu"
+    value: "cuda:1"
   # ---- FL ----
   dataset:
     values: ["cifar10"]

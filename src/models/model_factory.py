@@ -3,7 +3,14 @@ from models.regular_prompt import Prompted_ViT_B32
 class ModelFactory:
     @staticmethod
     def create(args, num_classes):
-        print(f"[ModelFactory] model={args['model_type']+"_Vit_B32"} | n_tokens={args.get('n_tokens')} | pool={args.get('pool_size', None)} | batchwise={args.get('batchwise_prompt', None)} | classes={num_classes}")
+        model_name = f"{args['model_type']}_Vit_B32" # will add more
+        print(
+            f"[ModelFactory] model={model_name} | "
+            f"n_tokens={args.get('n_tokens')} | "
+            f"pool={args.get('pool_size')} | "
+            f"batchwise={args.get('batchwise_prompt')} | "
+            f"classes={num_classes}"
+        )
         if args['model_type'] == 'prompted':
             
             return Prompted_ViT_B32(

@@ -1,0 +1,4 @@
+data/*
+!data/note.md
+wandb/*
+!wandb/note.md

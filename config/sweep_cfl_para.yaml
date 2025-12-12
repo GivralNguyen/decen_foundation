@@ -1,0 +1,70 @@
+# sweep.yaml
+program: src/fl_training.py
+method: bayes  # grid | random | bayes
+
+metric:
+  name: test_acc
+  goal: maximize
+
+parameters:
+  seed:
+    values: [0]
+  device:
+    value: "cpu"
+
+  # ---- FL ----
+  dataset:
+    values: ["cifar10"]
+  fl_setting:
+    values: ["centralized_fl"]
+  aggregation:
+    values: ["parametric", "nonparametric"]
+
+  batch:
+    values: [16]
+  comm_rounds:
+    values: [60]
+  lr:
+    values: [5e-4]
+    # distribution: log_uniform_values
+    # min: 1e-5
+    # max: 5e-4
+  local_eps:
+    values: [5]
+  n_clients:
+    value: 10
+  n_sampled_clients:
+    value: 10
+
+  # ---- Decentralized topology ----
+  # topo:
+  #   # values: ["ring", "regular", "star", "double_ring"] 
+  #   values: ["regular"]
+  # degree:
+  #   values: [4]   # only meaningful for topo=regular 
+
+  # ---- Data distribution ----
+  data_distribution:
+    values: ["non_iid_dirichlet"]
+  alpha:
+    values: [0.5]
+
+  # ---- Prompt tuning ----
+  model_type:
+    values: ["L2P"]
+  prompt_method:
+    values: ["shallow"]
+  pool_size:
+    values: [20]
+  n_tokens:
+    values: [10]
+  batchwise_prompt:
+    values: [true]
+  reduce_sim_scalar:
+    values: [0.001]
+
+  # ---- Nonparametric aggregation ----
+  nonpara_hidden_size:
+    values: [128]
+  num_loops_fednonpara:
+    values: [5]

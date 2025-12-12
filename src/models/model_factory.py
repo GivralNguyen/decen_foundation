@@ -1,0 +1,26 @@
+from models.L2P import L2P_ViT_B32
+from models.regular_prompt import Prompted_ViT_B32
+class ModelFactory:
+    @staticmethod
+    def create(args, num_classes):
+        print(f"[ModelFactory] model={args['model_type']+"_Vit_B32"} | n_tokens={args.get('n_tokens')} | pool={args.get('pool_size', None)} | batchwise={args.get('batchwise_prompt', None)} | classes={num_classes}")
+        if args['model_type'] == 'prompted':
+            
+            return Prompted_ViT_B32(
+                weight_init='random',
+                prompt_method=args['prompt_method'],
+                num_tokens=args['n_tokens'],
+                num_classes=['num_classes']
+            )
+
+        elif args['model_type'] == 'L2P':
+            return L2P_ViT_B32(
+                prompt_method=args['prompt_method'],
+                batchwise_prompt=args['batchwise_prompt'],
+                pool_size=args['pool_size'],
+                top_k=args['n_tokens'],
+                num_classes=num_classes
+            )
+
+        else:
+            raise ValueError(f"Unknown model_type: {args['model_type']}")

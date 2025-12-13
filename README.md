@@ -85,7 +85,7 @@ Create and activate a virtual environment, then install dependencies:
 ---
 ## Main Flow
 
-For the main training / execution flow, see:
+For the main execution flow, see:
 
 - `src/fl_training.py`
 

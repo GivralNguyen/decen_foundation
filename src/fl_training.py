@@ -22,14 +22,13 @@ def main():
     # 1) Create dataset
     data_factory = DatasetFactory()
     distributed_trainloaders, testloaders, all_clients_weights, num_classes, extra = data_factory.prepare(args)
-    # preprocess_transform = data_loader.dataset_builder.build_data_transform(norm_stats, resize, centercrop_size)
-    fl_base = FL_base(all_clients_weights,args['n_clients'], args['n_sampled_clients'], distributed_trainloaders)
     
     # 2) Create model
     base_model = to_device(ModelFactory.create(args, num_classes), args['device'])
     base_model.build_trainable_keys()
     
     # 3) Create FL algorithm
+    fl_base = FL_base(all_clients_weights,args['n_clients'], args['n_sampled_clients'], distributed_trainloaders)
     algo = AlgoFactory.create(
     args=args,
     base_model=base_model,
@@ -41,9 +40,6 @@ def main():
     
     # 4) Run training
     run_train_loop(algo=algo,args=args,testloader=testloaders)
-    
-    # if args['fl_setting'] == "centralized_fl":
-    #     if args['aggregation'] == "parametric":
         
     
 if __name__ == '__main__':

@@ -212,7 +212,7 @@ def decen_communication(models, G, client_weights=None,
                         break
     else:
          # -----------------------------
-        # Decentralized plain FedAvg
+        # Decentralized FedAvg
         # -----------------------------
         for i in range(n_clients):
             neighbors = list(G.neighbors(i))

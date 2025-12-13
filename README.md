@@ -30,8 +30,6 @@ This repository provides a **framework for distributed optimization of foundatio
 
 ## Project Structure
 
-## Project Structure
-
     ├── config                           # wandb configs 
     ├── data                             # Put datasets here 
     ├── notebook                         # Jupyter Notebook

@@ -1,4 +1,4 @@
-# sweep.yaml
+# sweep decentralized FL
 program: src/fl_training.py
 method: bayes  # grid | random | bayes
 

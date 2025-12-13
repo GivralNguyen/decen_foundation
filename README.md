@@ -80,7 +80,7 @@ This repository provides a **framework for distributed optimization of foundatio
 Create and activate a virtual environment, then install dependencies:
 
     conda env create -f environment.yml
-    conda activate fl
+    conda activate torch
 
 ---
 ## Main Flow

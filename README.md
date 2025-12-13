@@ -1,4 +1,4 @@
-# Decentralized Federated Learning Foundation
+# Decentralized FL for Foundation Model
 
 This repository provides a **framework for distributed optimization of foundation models** with support for **centralized and decentralized FL**, **parametric and non-parametric aggregation**.
 

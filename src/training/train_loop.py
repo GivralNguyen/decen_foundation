@@ -28,6 +28,7 @@ def run_train_loop(*,algo, args , testloader):
             testloader
         )
         if args['wandb']:
+            print("logging to wandb")
             wandb.log({"eval_loss": eval_loss, "round": comm_round})
             wandb.log({"test_acc": eval_acc, "round": comm_round})
 

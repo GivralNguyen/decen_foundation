@@ -41,7 +41,7 @@ def communication(server_model, models, client_weights, aggregation_method='para
                 temp = torch.stack(temp, dim=0) # temp is n_clients x prompt_length x 768
                 agg = NonparametricAgg(prompt_dim, n_hidden=nonpara_hidden).to(device)
                 temp = agg(temp)
-                print(temp.shape)
+                # print(temp.shape)
                 del agg
                 with torch.no_grad():
                     if hasattr(server_model, 'trained_prompts_checklist'):
@@ -217,7 +217,7 @@ def decen_communication(models, G, client_weights=None,
         for i in range(n_clients):
             neighbors = list(G.neighbors(i))
             local_group = neighbors + [i]
-            print(i,neighbors)
+            # print(i,neighbors)
             local_sum_w = sum(float(client_weights[j]) for j in local_group)
 
             for key in models[i].trainable_keys:

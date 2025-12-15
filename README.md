@@ -40,7 +40,8 @@ This repository provides a **framework for distributed optimization of foundatio
     │   │   ├── fl_base.py               # Base FL functions
     │   │   ├── fedavg.py                # Centralized FedAvg
     │   │   ├── decen_fedavg.py           # Decentralized FedAvg
-    │   │   └── nonparametric_aggregation.py  # Non-parametric aggregation
+    │   │   ├── nonparametric_aggregation.py  # Non-parametric aggregation
+    │   │   └── topo.py  # Decentralized topology
     │   │
     │   ├── data_loader                  # Dataset loading and distribution
     │   │   ├── DataDistributer.py        # Data partitioning across clients

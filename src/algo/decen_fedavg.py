@@ -42,7 +42,7 @@ class decenfedavg(fedavg):
             for i in range(self.scenario.n_clients_each_round):
                 self.client_model[i].reset_trained_pormpts_checklist()
     # average accuracy across all clients
-    def global_eval_avg(self, testloader, output_file):
+    def global_eval_avg(self, testloader):
         total_loss, total_acc, n_clients = 0.0, 0.0, self.scenario.n_clients_each_round
         for i in range(n_clients):
             eval_loss, eval_acc = evaluate(self.client_model[i], testloader, self.loss_fun, self.device)

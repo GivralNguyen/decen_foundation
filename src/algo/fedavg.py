@@ -68,12 +68,12 @@ class fedavg(nn.Module):
             print(f'Client_{self.selected_client_index[i]+1}: Train_loss: {train_loss}; Accuracy: {train_acc}')
 
     # server model eval
-    def global_eval_avg(self, testloader, nround):
+    def global_eval_avg(self, testloader):
         if self.class_mask is not None:
             eval_loss, eval_acc = evaluate_mask(self.base_model, testloader, self.loss_fun, self.device, self.class_mask)
         else:
             eval_loss, eval_acc = evaluate(self.base_model, testloader, self.loss_fun, self.device)
-        print(f'Comm_round_{nround+1} Server model: Eval_loss: {eval_loss}; Accuracy: {eval_acc}')
+        print(f'Server model: Eval_loss: {eval_loss}; Accuracy: {eval_acc}')
         if hasattr(self.base_model, 'trained_prompts_checklist'):
             return eval_loss, eval_acc, len(self.base_model.trained_prompts_checklist)
         else:

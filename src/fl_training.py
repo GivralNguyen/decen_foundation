@@ -28,7 +28,8 @@ def main():
     base_model.build_trainable_keys()
     
     # 3) Create FL algorithm
-    fl_base = FL_base(all_clients_weights,args['n_clients'], args['n_sampled_clients'], distributed_trainloaders)
+    # fl_base = FL_base(all_clients_weights,args['n_clients'], args['n_sampled_clients'], distributed_trainloaders)
+    fl_base = FL_base(args, all_clients_weights, distributed_trainloaders)
     algo = AlgoFactory.create(
     args=args,
     base_model=base_model,

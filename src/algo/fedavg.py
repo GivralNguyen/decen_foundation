@@ -51,7 +51,7 @@ class fedavg(nn.Module):
             if hasattr(self.client_model[i], 'trained_prompts_checklist'):
                 self.client_model[i].trained_prompts_checklist /= torch.max(self.client_model[i].trained_prompts_checklist)
 
-    def server_aggre(self):
+    def agg(self):
         self.base_model, self.client_model = communication(self.base_model, self.client_model,
                                                              self.selected_client_weights, self.aggregation_method,
                                                              nonpara_hidden=self.nonpara_hidden,

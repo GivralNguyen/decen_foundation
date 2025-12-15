@@ -4,15 +4,35 @@ import numpy as np
 from algo.communication import decen_communication
 from algo.fedavg import fedavg
 from training.eval import evaluate
-
+from algo.topo import (
+    # create_random_graph,
+    create_random_ring_graph,
+    create_regular_graph,
+    # create_multi_star_graph,
+    # create_exponential_graph,
+    # create_double_ring_graph,
+    # create_cluster_topology,
+    # create_random_line_graph,
+)
 # Inherits from fedavg class, with graph as additional parameter
 class decenfedavg(fedavg):
     def __init__(self, base_model, scenario, loss_fun, class_mask, G, aggregation_method='parametric', nonpara_hidden=128, device='cuda'):
         super(decenfedavg, self).__init__(base_model=base_model, scenario=scenario, loss_fun=loss_fun, class_mask=class_mask, aggregation_method=aggregation_method, nonpara_hidden=nonpara_hidden, device=device)
         self.base_model = base_model
         self.base_model.eval()
-        self.graph = G  # topology graph (nodes: 0..n_clients_each_round-1)
+        self.graph = self._build_graph(G)  # topology graph (nodes: 0..n_clients_each_round-1)
     # aggregation with only neighbors
+    def _build_graph(self, G):
+        n = self.scenario.n_clients_each_round
+        if isinstance(G, str):
+            if G == 'random_ring':
+                G = create_random_ring_graph(n)
+            elif G == 'regular':
+                degree = self.scenario.graph_degree
+                G = create_regular_graph(n, degree)
+            else:
+                raise ValueError(f"Graph type {G} not recognized.")
+        return G
     def agg(self):
         local_models = self.client_model[:self.scenario.n_clients_each_round]
         local_weights = self.selected_client_weights

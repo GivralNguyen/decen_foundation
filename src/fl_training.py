@@ -15,8 +15,8 @@ def main():
     args = argument_parser.read_option()
     # if args['verbose']: # verbose prints out arguments
     #     print(args)
-    if args['wandb']: # Wandb setup
-        wandb.init()
+    # if args['wandb']: # Wandb setup
+    wandb.init()
     setup_seed(args['seed']) # Set randomized seed
     
     # 1) Create dataset

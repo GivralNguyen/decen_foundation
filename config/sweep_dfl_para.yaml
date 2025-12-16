@@ -3,7 +3,7 @@ program: src/fl_training.py
 method: bayes  # grid | random | bayes
 
 metric:
-  name: test_acc
+  name: eval_acc
   goal: maximize
 
 parameters:

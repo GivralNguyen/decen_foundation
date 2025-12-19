@@ -1,6 +1,6 @@
  # sweep centralized FL
 program: src/fl_training.py
-method: bayes  # grid | random | bayes
+method: grid  # grid | random | bayes
 
 metric:
   name: eval_acc

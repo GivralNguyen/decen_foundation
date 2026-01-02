@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.optim import Adam
 import copy
 import numpy as np
+import wandb
 from torch.distributions.normal import Normal
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.bernoulli import Bernoulli
@@ -97,6 +98,7 @@ class NonparametricAgg(nn.Module):
             #opt.step()
         z = np.stack(z)
         z = np.sum(np.stack(z), axis=(0, 1), keepdims=False) # n_local x n_global
+        print(z)
         global_prompts = centroids[0][np.where(z > 0)[0]]
         del z, centroids
         return global_prompts
@@ -143,11 +145,11 @@ class DecenNonparametricAgg(NonparametricAgg):
                 opt.zero_grad()
 
                 local_t = local_prompts_list[t]  # [n_local_t, prompt_dim]
-                z_t = z[t]                       # [n_local_t, n_global]
+                # z_t = z[t]                       # [n_local_t, n_global]
 
                 # inherited from NonparametricAgg
-                l1, m1 = self.prompt_likelihood(local_t, centroids[0], z_t)
-                l2, m2 = self.z_likelihood(centroids[0], z_t)
+                l1, m1 = self.prompt_likelihood(local_t, centroids[0], z[t])
+                l2, m2 = self.z_likelihood(centroids[0], z[t])
 
                 loss = -l1 - l2
                 loss.backward()
@@ -157,23 +159,29 @@ class DecenNonparametricAgg(NonparametricAgg):
                 m = (m1 + m2).t().detach().cpu().numpy()
                 row_id, col_id = linear_sum_assignment(m, maximize=True)
 
-                z_t *= 0.0
-                z_t[row_id, col_id] = 1.0
-                z[t] = z_t
+                z[t] *= 0.0
+                # z_t[row_id, col_id] = 1.0
+                # z[t] = z_t
+                z[t][row_id, col_id] += 1
 
         # -------- aggregate z across clients ----------
+        # z = np.stack(z)
+        # z = np.sum(np.stack(z), axis=(0, 1), keepdims=False) # n_local x n_global
+        # print(z)
+        # global_prompts = centroids[0][np.where(z > 0)[0]]
         z_all = np.zeros(n_global, dtype=np.float32)
         for z_t in z:
             z_all += z_t.sum(axis=0)
-
+        print(z_all)
         used_idx = np.where(z_all > 0)[0]
         used_idx_t = torch.from_numpy(used_idx).long().to(device)
 
         scores_used = torch.tensor(z_all, device=device)[used_idx_t]
 
-        K = min(30, scores_used.numel())
+        # K = min(30, scores_used.numel())
+        K = scores_used.numel()
         top_scores, top_pos = torch.topk(scores_used, K)
-
+        # print(top_scores, top_pos)
         final_idx_t = used_idx_t[top_pos]
         global_prompts = centroids[0][final_idx_t]  # [K, prompt_dim]
 

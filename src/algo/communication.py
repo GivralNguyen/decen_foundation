@@ -2,15 +2,16 @@ import torch
 import torch.nn as nn
 import copy
 import numpy as np
+import wandb
 from algo.nonparametric_aggregation import NonparametricAgg
 from algo.nonparametric_aggregation import DecenNonparametricAgg
 
-def communication(server_model, models, client_weights, aggregation_method='parametric', total_n_clietns=100, nonpara_hidden=128, device='cuda'):
+def communication(server_model, comm_round, models, client_weights, aggregation_method='parametric', total_n_clietns=100, nonpara_hidden=128, device='cuda'):
     # Centralized FL aggregation step: sync all clients to the server using either
     # parametric (FedAvg on all trainable keys) or nonparametric agg.
     client_num = len(models)
     sum_weights = torch.tensor(np.sum(client_weights), dtype=torch.float, device=device)
-    
+    assert aggregation_method in ("nonparametric", "parametric")
     if aggregation_method == 'nonparametric':
         for key in server_model.trainable_keys:
             if 'prompt' not in key:
@@ -41,7 +42,8 @@ def communication(server_model, models, client_weights, aggregation_method='para
                 temp = torch.stack(temp, dim=0) # temp is n_clients x prompt_length x 768
                 agg = NonparametricAgg(prompt_dim, n_hidden=nonpara_hidden).to(device)
                 temp = agg(temp)
-                # print(temp.shape)
+                wandb.log({"global_prompt_size": temp.size(0), "round": comm_round})
+                print(temp.shape)
                 del agg
                 with torch.no_grad():
                     if hasattr(server_model, 'trained_prompts_checklist'):
@@ -69,7 +71,7 @@ def communication(server_model, models, client_weights, aggregation_method='para
     return server_model, models
 
 
-def decen_communication(models, G, client_weights=None,
+def decen_communication(models, comm_round, G, client_weights=None,
                         aggregation_method='parametric', nonpara_hidden=128, device='cuda'):
     """
     # Decentralized FL aggregation step: each client aggregates only within its local
@@ -92,19 +94,19 @@ def decen_communication(models, G, client_weights=None,
 
     # Container for new parameters (synchronous update)
     new_params = [dict() for _ in range(n_clients)]
-
-    if aggregation_method == 'nonparametric_aggregation':
+    assert aggregation_method in ("nonparametric", "parametric")
+    if aggregation_method == 'nonparametric':
        
     # ---------------------------------------------------
     # Decentralized nonparametric_aggregation
     # (mimics your centralized nonparametric_aggregation
     #  but restricted to each node's neighborhood)
     # ---------------------------------------------------
-
+        agg_prompt_sizes = []
         for i in range(n_clients):
             neighbors = list(G.neighbors(i))
             local_group = neighbors + [i]
-            # print(i,neighbors)
+            print(i,neighbors)
             local_sum_w = sum(float(client_weights[j]) for j in local_group)
 
             for key in models[i].trainable_keys:
@@ -186,12 +188,14 @@ def decen_communication(models, G, client_weights=None,
 
                     # temp_stack = torch.stack(temp_list, dim=0)  # [local_clients, prompt_len(or subset), prompt_dim]
                     agg = DecenNonparametricAgg(prompt_dim, n_hidden=nonpara_hidden).to(device)
-                    agg_out = agg(temp_list)  # should be [prompt_len(or subset), prompt_dim]
-                    # print(agg_out.shape)
+                    agg_out = agg(temp_list)  # should be [prompt_len(or subset), prompt_dim]\
+                    agg_prompt_sizes.append(agg_out.size(0))
+                    print(agg_out.shape)
                     del agg
 
                     new_params[i][key] = agg_out
-
+        avg_agg_prompt_size = sum(agg_prompt_sizes) / len(agg_prompt_sizes)
+        wandb.log({"avg_global_prompt_size": avg_agg_prompt_size, "round": comm_round})
         # Assign back for nonparametric_aggregation
         with torch.no_grad():
             for i in range(n_clients):
@@ -208,8 +212,8 @@ def decen_communication(models, G, client_weights=None,
                             models[i].pool.prompt = nn.Parameter(temp, requires_grad=True)
                         else:
                             models[i].prompt_embeddings = nn.Parameter(temp, requires_grad=True)
-                        # Only need to set once per model
-                        break
+                        # # Only need to set once per model
+                        # break
     else:
          # -----------------------------
         # Decentralized FedAvg

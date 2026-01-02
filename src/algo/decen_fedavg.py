@@ -33,10 +33,10 @@ class decenfedavg(fedavg):
             else:
                 raise ValueError(f"Graph type {G} not recognized.")
         return G
-    def agg(self):
+    def agg(self, comm_round):
         local_models = self.client_model[:self.scenario.n_clients_each_round]
         local_weights = self.selected_client_weights
-        decen_communication(models=local_models, G=self.graph, client_weights=local_weights, aggregation_method=self.aggregation_method, nonpara_hidden=self.nonpara_hidden, device=self.device)
+        local_models = decen_communication(models=local_models,  comm_round=comm_round, G=self.graph, client_weights=local_weights, aggregation_method=self.aggregation_method, nonpara_hidden=self.nonpara_hidden, device=self.device)
         self.client_model[:self.scenario.n_clients_each_round] = local_models
         if hasattr(self.client_model[0], 'trained_prompts_checklist'):
             for i in range(self.scenario.n_clients_each_round):

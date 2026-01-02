@@ -3,3 +3,5 @@ data/*
 wandb/*
 !wandb/note.md
 __pycache__/
+src/multimodal/
+notebook/

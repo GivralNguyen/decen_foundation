@@ -51,6 +51,7 @@ class DatasetFactory:
     def prepare(self, args):
         print(f"[DatasetFactory] dataset = {args['dataset']}, "
           f"num_clients = {args['n_clients']}, "
+          f"num_sampled_per_round = {args['n_sampled_clients']}, "
           f"batch_size = {args['batch']}")
         trainset, testset, num_classes, extra = self.build(args['dataset'])
          # Build test loaders
@@ -77,7 +78,7 @@ class DatasetFactory:
             else:
                 data_partitioner.dirichlet_split_noniid(alpha=args['alpha'], least_samples=32, manual_seed=seed)
         elif args['data_distribution'] == 'manual_extreme_heterogeneity':
-            print(f"[DatasetFactory] manual_extreme_heterogeneity, "
+            print("[DatasetFactory] manual_extreme_heterogeneity, "
             )
             if isinstance(data_partitioner, list):
                 for i in range(len(data_partitioner)):

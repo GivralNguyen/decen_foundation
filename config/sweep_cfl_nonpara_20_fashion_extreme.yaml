@@ -1,0 +1,71 @@
+ # sweep centralized FL
+program: src/fl_training.py
+method: grid  # grid | random | bayes
+
+metric:
+  name: eval_acc
+  goal: maximize
+
+parameters:
+  seed:
+    values: [0]
+  device:
+    value: "cuda:1"
+
+  # ---- FL ----
+  dataset:
+    values: ["fashion"]
+  fl_setting:
+    values: ["centralized_fl"]
+  aggregation:
+    values: ["nonparametric"]
+
+  batch:
+    values: [16]
+  comm_rounds:
+    values: [60]
+  lr:
+    values: [1e-4]
+    # distribution: log_uniform_values
+    # min: 1e-5
+    # max: 5e-4
+  local_eps:
+    values: [5]
+  n_clients:
+    value: 20
+  n_sampled_clients:
+    value: 20
+
+  # ---- Decentralized topology ----
+  # topo:
+  #   # values: ["ring", "regular", "star", "double_ring"] 
+  #   values: ["regular"]
+  # degree:
+  #   values: [4]   # only meaningful for topo=regular 
+
+  # ---- Data distribution ----
+  data_distribution:
+    values: ["manual_extreme_heterogeneity"]
+  alpha:
+    values: [0.5]
+  n_dominated_class:
+      values: [1]
+  # ---- Prompt tuning ----
+  model_type:
+    values: ["L2P"]
+  prompt_method:
+    values: ["shallow"]
+  pool_size:
+    values: [20]
+  n_tokens:
+    values: [10]
+  batchwise_prompt:
+    values: [true]
+  reduce_sim_scalar:
+    values: [0.001]
+
+  # ---- Nonparametric aggregation ----
+  nonpara_hidden_size:
+    values: [128]
+  num_loops_fednonpara:
+    values: [5]

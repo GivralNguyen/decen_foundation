@@ -21,7 +21,7 @@ def run_train_loop(*,algo, args , testloader):
         )
 
         # 2) aggregation 
-        algo.agg()
+        algo.agg(comm_round=comm_round)
 
         # 3) Evaluation
         eval_loss, eval_acc = algo.global_eval_avg(
